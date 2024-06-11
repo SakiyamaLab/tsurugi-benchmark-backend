@@ -10,6 +10,12 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 
+import com.tsurugidb.tsubakuro.common.Session;
+import com.tsurugidb.tsubakuro.common.SessionBuilder;
+import com.tsurugidb.tsubakuro.exception.ServerException;
+import com.tsurugidb.tsubakuro.sql.ResultSet;
+import com.tsurugidb.tsubakuro.sql.SqlClient;
+import com.tsurugidb.tsubakuro.sql.Transaction;
 import org.json.JSONObject;
 
 
@@ -42,9 +48,19 @@ public class Main {
         }
 
         private void handleGet(HttpExchange exchange) throws IOException {
-            // TODO: Tsurugi Java API Code(select)
+            // WARN: Please Write Your Database Url
+            String url = "";
+            String response = "";
+            try(Session session = SessionBuilder.connect(url).create();
+                SqlClient sqlClient = SqlClient.attach(session);
+                Transaction transaction = sqlClient.createTransaction().await()) {
+                try (ResultSet resultSet = transaction.executeQuery("SELECT * FROM test").await();) {
+                    response = resultSet.toString();
+                }
+            } catch (ServerException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
 
-            String response = "GET OK";
             exchange.sendResponseHeaders(200, response.length());
             OutputStream os = exchange.getResponseBody();
             os.write(response.getBytes());
