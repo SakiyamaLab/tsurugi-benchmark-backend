@@ -1,0 +1,1 @@
+docker exec -it tsurugidb tgsql -c tcp://localhost:12345

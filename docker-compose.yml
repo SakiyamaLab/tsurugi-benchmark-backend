@@ -1,0 +1,11 @@
+services:
+  tsurugidb:
+    image: ghcr.io/project-tsurugi/tsurugidb:snapshot-ubuntu-24.04
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tsurugidb
+    ports:
+      - 12345:12345
+    volumes:
+      - .:/app
